@@ -58,52 +58,24 @@ int compareFunction(KEY key1, KEY key2){
 /*
 // Purpose: Analyse the number of occurences of characters from string chars.
 // Paramters: char* dlist - A list with the characters to analyze.
-// Returns: A table with the key being the character analyzed and the value being the number of occurences. 
+// Returns: An charElement array with the number of occurences of every character.
 */
-Table *frequencyAnalasys(dlist* chars){
-    /*Table *analyzedSymbols = table_create(compareFunction);
-    table_setKeyMemHandler(analyzedSymbols, free);
-    table_setValueMemHandler(analyzedSymbols, free);
-    */
+charElement *frequencyAnalasys(dlist* chars){
     charElement *analyzedSymbols = malloc(sizeof(charElement) * CHARSETSIZE);
 
-
-    //add every character from charset of one byte to table
+    //add every character from charset of one byte to the array
     for(int i = 0; i < CHARSETSIZE; i++){
         analyzedSymbols[i].character = i;
         analyzedSymbols[i].numOccurences = 0;
-/*
-        int* valToInsert = calloc(0,sizeof(int));
-        int* keyToInsert = malloc(sizeof(int));
-        *keyToInsert = i;
-        table_insert(analyzedSymbols, keyToInsert, valToInsert);*/
     }
 
     //increment every character found in string to use as freqvency text.
     dlist_position pos = dlist_first(chars);
     while(!dlist_isEnd(chars, pos)){
         char *charToIncrease = ((char *)dlist_inspect(chars, pos));
-        int *val = table_lookup(analyzedSymbols, charToIncrease);
-        if(val != NULL){
-            *val = *val + 1;
-        }
-        else{
-            printf("fail");
-        }
+        analyzedSymbols[*charToIncrease].numOccurences++;
         pos = dlist_next(chars, pos);
     }
-    /*
-    for(int i = 0; i < CHARSETSIZE; i++){
-        printf("char %c = %d\n", i, *(int*) table_lookup(analyzedSymbols, &i));
-    }
-    char ch;
-    pos = dlist_first(chars);
-    while(!dlist_isEnd(chars, pos)){
-        ch = *(char*)dlist_inspect(chars, pos);
-        printf("%c", ch);
-        pos = dlist_next(chars, pos);
-    }*/
-
     return analyzedSymbols;
 }
 
@@ -200,14 +172,14 @@ int main(int argc, char *argv[]){
     if(strcmp(argv[1], "-encode") == 0){
         dlist *chars = readFile("testFile.txt");
         printf("working so far...\n");
-        Table *analyzedSymbols = frequencyAnalasys(chars);
-        //binary_tree huffTree = createHuffmanTree(analyzedSymbols);
+        frequencyAnalasys(chars);
+        charElement *analysedChars = createHuffmanTree(analyzedSymbols);
         
 
 
 
         dlist_free(chars);
-        table_free(analyzedSymbols);
+        //table_free(analyzedSymbols);
         printf("program works!\n");
 
 

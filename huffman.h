@@ -31,16 +31,16 @@ int compareFunction(KEY key1, KEY key2);
 /*
 // Purpose: Analyse the number of occurences of characters from string chars.
 // Paramters: char* dlist - A list with the characters to analyze.
-// Returns: A table with the key being the character analyzed and the value being the number of occurences. 
+// Returns: An charElement array with the number of occurences of every character.
 */
-Table *frequencyAnalasys(dlist* chars);
+charElement *frequencyAnalasys(dlist* chars);
 
 /*
 // Purpose: Create a huffman tree with the analyzed characters from the array aChars. 
-// Parameters: Table* aChars - A table with the analyzed charaters based on frequency.
+// Parameters: charElement* aChars - An array with the analyzed charaters based on frequency.
 // Returns: A huffman tree. 
 */
-binary_tree createHuffmanTree(Table* aChars);
+binary_tree createHuffmanTree(charElement *aChars);
 
     
 /*
@@ -63,15 +63,15 @@ dlist* decodeChars(dlist* chars, binary_tree *huffmanTree);
                                    ex a = 0, b = 100, c = 110, ... = 1111...
 // Returns: An array with the compressed characters in bitformat.
 */
-char* compressChars(char* chars, Table *huffmanTable);
+char* compressChars(char* chars, binary_tree *huffmanTree);
 
 /*
 // Purpose: Create a table where each character (key) has a bit value to use for compression.
 // Parameters: dlist *chars - A list with the characters to use in the tree.
                binary_tree huffmanTree - the huffman tree used to create the table with.
-// Returns: A table to use for compressing strings.
+// Returns: An array to use for compressing strings.
 */
-Table createHuffmanTable(dlist* chars, binary_tree *huffmanTree);
+charElement *createHuffmanArray(dlist* chars, binary_tree *huffmanTree);
 
 /*
 // Purpose: Sort the keys and values from the analyzed character table into an array to make for easier tree creation.
