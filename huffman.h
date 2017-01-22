@@ -13,6 +13,17 @@ typedef struct{
     int numOccurences;
 } charElement;
 
+typedef struct{
+    char character;
+    bool leftOrRight;
+} treeNode;
+
+typedef struct{
+    binary_tree *subTree;
+    int value;
+} subTree;
+
+
 /*
 // Purpose: Read a file and create an array with all of the characters. 
 // Parameters: char* fileName - The name of the file being read.
@@ -30,14 +41,14 @@ int compareFunction(KEY key1, KEY key2);
 
 /*
 // Purpose: Analyse the number of occurences of characters from string chars.
-// Paramters: char* dlist - A list with the characters to analyze.
+// Paramters: char* dlist - A list with the characters to analyse.
 // Returns: An charElement array with the number of occurences of every character.
 */
 charElement *frequencyAnalasys(dlist* chars);
 
 /*
-// Purpose: Create a huffman tree with the analyzed characters from the array aChars. 
-// Parameters: charElement* aChars - An array with the analyzed charaters based on frequency.
+// Purpose: Create a huffman tree with the analysed characters from the array aChars. 
+// Parameters: charElement* aChars - An array with the analysed charaters based on frequency.
 // Returns: A huffman tree. 
 */
 binary_tree createHuffmanTree(charElement *aChars);
@@ -74,11 +85,10 @@ char* compressChars(char* chars, binary_tree *huffmanTree);
 charElement *createHuffmanArray(dlist* chars, binary_tree *huffmanTree);
 
 /*
-// Purpose: Sort the keys and values from the analyzed character table into an array to make for easier tree creation.
-// Parameters: Table aChars - A table with the analyzed charaters based on frequency.
-// Returns: A charElement array sorted by the number of occurences of every character from smallest to largest.
+// Purpose: Sort the keys and values from the analysed character array into an array to make for easier tree creation.
+// Parameters: charElement *aChars - An array with the analysed charaters based on frequency.
 */
-charElement* createSortedAnalyzedArray(Table *aChars);
+void reverseSortArray(charElement *aChars);
 
 /*
 // Purpose: Get the bit at position n of character data.

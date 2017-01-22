@@ -61,49 +61,64 @@ int compareFunction(KEY key1, KEY key2){
 // Returns: An charElement array with the number of occurences of every character.
 */
 charElement *frequencyAnalasys(dlist* chars){
-    charElement *analyzedSymbols = malloc(sizeof(charElement) * CHARSETSIZE);
+    charElement *analysedSymbols = malloc(sizeof(charElement) * CHARSETSIZE);
 
     //add every character from charset of one byte to the array
     for(int i = 0; i < CHARSETSIZE; i++){
-        analyzedSymbols[i].character = i;
-        analyzedSymbols[i].numOccurences = 0;
+        analysedSymbols[i].character = i;
+        analysedSymbols[i].numOccurences = 0;
     }
 
     //increment every character found in string to use as freqvency text.
     dlist_position pos = dlist_first(chars);
     while(!dlist_isEnd(chars, pos)){
         char *charToIncrease = ((char *)dlist_inspect(chars, pos));
-        analyzedSymbols[*charToIncrease].numOccurences++;
+        analysedSymbols[*charToIncrease].numOccurences++;
         pos = dlist_next(chars, pos);
     }
-    return analyzedSymbols;
+    return analysedSymbols;
 }
 
 /*
-// Purpose: Create a huffman tree with the analyzed characters from the array aChars. 
-// Parameters: Table aChars - A table with the analyzed charaters based on frequency.
+// Purpose: Create a huffman tree with the analysed characters from the array aChars. 
+// Parameters: charElement *aChars - An array with the analysed charaters based on frequency.
 // Returns: A huffman tree. 
 */
-binary_tree createHuffmanTree(Table *aChars){
-    /*binary_tree huffTree = binaryTree_create();
+binary_tree createHuffmanTree(charElement *aChars){
+    binary_tree *huffTree = binaryTree_create();
     binaryTree_setMemHandler(huffTree, free);
-*/
+    reverseSortArray(aChars);
+    //add one to round the div up.
+    int numLoops = (CHARSETSIZE + 1) / 2;
 
-};
 
-/*
-// Purpose: Sort the keys and values from the analyzed character table into an array to make for easier tree creation.
-// Parameters: Table aChars - A table with the analyzed charaters based on frequency.
-// Returns: A charElement array sorted by the number of occurences of every character from smallest to largest.
-*/
-charElement* createSortedAnalyzedArray(Table *aChars){
-    charElement *chars = malloc(sizeof(charElement) * 256);
-    while(!table_isEmpty(aChars)){
-        for(int i = 0; i < 256; i++){
-            int *smallestValue = table_lookup(aChars, &i);
+    //todo: Create and add the trees together.
+    /*while(numLoops != 1){
+        for(int i = 0; i < numLoops; i++){
+
         }
     }
+    for(int i = 0; i < CHARSETSIZE / 2; i++){
 
+    }*/
+};
+
+
+/*
+// Purpose: Sort the keys and values from the analysed character table into an array to make for easier tree creation.
+// Parameters: Table aChars - A table with the analysed charaters based on frequency.
+// Returns: A charElement array sorted by the number of occurences of every character from smallest to largest.
+*/
+void reverseSortArray(charElement *aChars){
+    for(int i = 0; i < CHARSETSIZE - 1; i++){
+        for(int j = 1; j < CHARSETSIZE - i - 1; j++){
+            if(aChars[j].numOccurences < aChars[j + 1].numOccurences){
+                charElement swap = aChars[j];
+                aChars[j] = aChars[j+1];
+                aChars[j+1] = swap;
+            }
+        }
+    }
 }
 
     
@@ -127,7 +142,7 @@ dlist* decodeChars(dlist* chars, binary_tree *huffmanTree);
                                    ex a = 0, b = 100, c = 110, ... = 1111...
 // Returns: An array with the compressed characters in bitformat.
 */
-char* compressChars(char* chars, Table *huffmanTable);
+char* compressChars(char* chars, binary_tree *huffmanTable);
 
 /*
 // Purpose: Create a table where each character (key) has a bit value to use for compression.
@@ -145,7 +160,6 @@ Table createHuffmanTable(dlist* chars, binary_tree *huffmanTree);
 */
 bool getNthBit(int n, char data);
 
-
 /*
 //  Purpose: Change the bit at position n of character data to bool val.
 //  Parameters: int n - position of the bit to change at character data.
@@ -155,8 +169,6 @@ bool getNthBit(int n, char data);
             http://stackoverflow.com/a/47990.
 */
 void setNthBit(int n, char* data, bool val);
-
-
 
 /*
 //  Purpose: 
@@ -172,14 +184,11 @@ int main(int argc, char *argv[]){
     if(strcmp(argv[1], "-encode") == 0){
         dlist *chars = readFile("testFile.txt");
         printf("working so far...\n");
-        frequencyAnalasys(chars);
-        charElement *analysedChars = createHuffmanTree(analyzedSymbols);
+        charElement *analysedSymbols = frequencyAnalasys(chars);
+        binary_tree tree = createHuffmanTree(analysedSymbols);
         
-
-
-
         dlist_free(chars);
-        //table_free(analyzedSymbols);
+        free(analysedSymbols);
         printf("program works!\n");
 
 
