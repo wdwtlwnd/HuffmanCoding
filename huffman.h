@@ -11,6 +11,7 @@
 typedef struct{
     char character;
     int numOccurences;
+    binary_tree *tree;
 } charElement;
 
 typedef struct{
@@ -51,7 +52,7 @@ charElement *frequencyAnalasys(dlist* chars);
 // Parameters: charElement* aChars - An array with the analysed charaters based on frequency.
 // Returns: A huffman tree. 
 */
-binary_tree createHuffmanTree(charElement *aChars);
+binary_tree *createHuffmanTree(charElement *aChars);
 
     
 /*
@@ -74,7 +75,15 @@ dlist* decodeChars(dlist* chars, binary_tree *huffmanTree);
                                    ex a = 0, b = 100, c = 110, ... = 1111...
 // Returns: An array with the compressed characters in bitformat.
 */
-char* compressChars(char* chars, binary_tree *huffmanTree);
+char* compressChars(dlist *chars, binary_tree *huffmanTree);
+
+/*
+// Purpose: Add element to array and sort it afterwards.
+// Parameters: charElement *chars - A list with the characters to compress.
+               int *size - size of the array
+               charElement *element - the element to insert into the array.
+*/
+void insertElement(charElement *aChars, int *size, charElement *element);
 
 /*
 // Purpose: Create a table where each character (key) has a bit value to use for compression.

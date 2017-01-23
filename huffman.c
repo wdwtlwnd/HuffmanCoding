@@ -30,13 +30,7 @@ dlist* readFile(char* fileName){
         *charToSave = ch;
         pos = dlist_insert(chars, pos, (int*)charToSave);
     }
-    
-    /*pos = dlist_first(chars);
-    while(!dlist_isEnd(chars, pos)){
-        ch = *(char*)dlist_inspect(chars, pos);
-        printf("%c", ch);
-        pos = dlist_next(chars, pos);
-    }*/
+
     fclose(fp);
     return chars;
 }
@@ -76,6 +70,9 @@ charElement *frequencyAnalasys(dlist* chars){
         analysedSymbols[*charToIncrease].numOccurences++;
         pos = dlist_next(chars, pos);
     }
+    for(int i = 0; i < CHARSETSIZE; i++){
+        printf("%c = %d\n", analysedSymbols[i].character, analysedSymbols[i].numOccurences);
+    }
     return analysedSymbols;
 }
 
@@ -84,39 +81,76 @@ charElement *frequencyAnalasys(dlist* chars){
 // Parameters: charElement *aChars - An array with the analysed charaters based on frequency.
 // Returns: A huffman tree. 
 */
-binary_tree createHuffmanTree(charElement *aChars){
+binary_tree *createHuffmanTree(charElement *aChars){
     binary_tree *huffTree = binaryTree_create();
     binaryTree_setMemHandler(huffTree, free);
     reverseSortArray(aChars);
-    //add one to round the div up.
-    int numLoops = (CHARSETSIZE + 1) / 2;
+    int *size = malloc(sizeof(int));
+    *size = CHARSETSIZE;
 
-
-    //todo: Create and add the trees together.
-    /*while(numLoops != 1){
-        for(int i = 0; i < numLoops; i++){
-
+    //keep creating trees with two children out of the analysed character array.
+    while(*size > 0){
+        charElement *elementToAdd = malloc(sizeof(charElement));
+        elementToAdd->tree = binaryTree_create();
+        binaryTree_setMemHandler(elementToAdd->tree, free);
+        binaryTree_pos pos = binaryTree_root(elementToAdd->tree);
+        binaryTree_pos left = binaryTree_insertLeft(elementToAdd->tree, pos);
+        binaryTree_pos right = binaryTree_insertRight(elementToAdd->tree, pos);
+        charElement *leftChild = malloc(sizeof(charElement));
+        charElement *rightChild = malloc(sizeof(charElement));
+        *leftChild = aChars[*size - 1];
+        *rightChild = aChars[*size - 2];
+        elementToAdd->numOccurences = leftChild->numOccurences + rightChild->numOccurences;
+        binaryTree_setLabel(elementToAdd->tree, leftChild, left);
+        binaryTree_setLabel(elementToAdd->tree, rightChild, right);
+        *size -= 1;
+        insertElement(aChars, size, elementToAdd);
+        /*printf("\n\n");
+        for(int i = 0; i < *size; i++){
+            printf("%d=%d,", i, aChars[i].numOccurences);
         }
+        printf("\n\n");*/
     }
-    for(int i = 0; i < CHARSETSIZE / 2; i++){
-
-    }*/
+    printf("%d=%d,", 0, aChars[0].numOccurences);
+    free(size);
+    return aChars[0].tree;
 };
 
+/*
+// Purpose: Add element to array and sort it afterwards.
+// Parameters: charElement *chars - A list with the characters to compress.
+               int *size - size of the array
+               charElement *element - the element to insert into the array.
+*/
+void insertElement(charElement *aChars, int *size, charElement *element){
+    // search for where to insert element.
+    for(int i = *size - 1; i >= 0; i--){
+        if(aChars[i].numOccurences >= element->numOccurences || i == 0){
+            //move all values to make space for inserted element.
+            for(int j = *size; j > i; j--){
+                aChars[j] = aChars[j-1];
+            }
+            aChars[i] = *element;
+            break;
+        }
+    }
+}
 
 /*
 // Purpose: Sort the keys and values from the analysed character table into an array to make for easier tree creation.
 // Parameters: Table aChars - A table with the analysed charaters based on frequency.
-// Returns: A charElement array sorted by the number of occurences of every character from smallest to largest.
+// Returns: A charElement array sorted by the number of occurences of every character from largest to smallest.
 */
 void reverseSortArray(charElement *aChars){
+    //bubble sort the array
     for(int i = 0; i < CHARSETSIZE - 1; i++){
-        for(int j = 1; j < CHARSETSIZE - i - 1; j++){
+        for(int j = 0; j < CHARSETSIZE - i - 1; j++){
             if(aChars[j].numOccurences < aChars[j + 1].numOccurences){
                 charElement swap = aChars[j];
                 aChars[j] = aChars[j+1];
                 aChars[j+1] = swap;
             }
+
         }
     }
 }
@@ -142,7 +176,7 @@ dlist* decodeChars(dlist* chars, binary_tree *huffmanTree);
                                    ex a = 0, b = 100, c = 110, ... = 1111...
 // Returns: An array with the compressed characters in bitformat.
 */
-char* compressChars(char* chars, binary_tree *huffmanTable);
+char* compressChars(dlist* chars, binary_tree *huffmanTable);
 
 /*
 // Purpose: Create a table where each character (key) has a bit value to use for compression.
@@ -185,7 +219,7 @@ int main(int argc, char *argv[]){
         dlist *chars = readFile("testFile.txt");
         printf("working so far...\n");
         charElement *analysedSymbols = frequencyAnalasys(chars);
-        binary_tree tree = createHuffmanTree(analysedSymbols);
+        binary_tree *tree = createHuffmanTree(analysedSymbols);
         
         dlist_free(chars);
         free(analysedSymbols);
